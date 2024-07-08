@@ -47,7 +47,7 @@ async function promptForColors() {
     const tailwindColors = {};
     let colorCount = 0;
 
-    while (colorCount < 4) {
+    while (colorCount < 5) {
         const answers = await inquirer.prompt(questions);
 
         const colorName = answers.colorName.trim();
@@ -56,6 +56,7 @@ async function promptForColors() {
         const tailwindVariables = {};
         const cssVariables = {};
 
+        // Create CSS/Tailwind variables for each shade
         Object.keys(shades).forEach(shadeKey => {
             const rgb = hexToRgb(shades[shadeKey]);
             const variableName = `--color-${colorName}-${shadeKey}`;
@@ -82,8 +83,10 @@ async function promptForColors() {
         }
     };
 
-    const tailwindConfig = JSON5.stringify(tailwindOutput, null, 2);
+    // Stringify and remove single quotes from the output
+    const tailwindConfig = JSON5.stringify(tailwindOutput, null, 2).replace(/'(\d+)':/g, '$1:');
 
+    // Write Tailwind configuration to file
     fs.writeFile('tailwind.config.js', `module.exports = ${tailwindConfig}`, (err) => {
         if (err) {
             console.error('Error saving Tailwind CSS configuration:', err);
@@ -92,7 +95,7 @@ async function promptForColors() {
         }
     });
 
-    // Generate CSS variables string
+    // Write CSS output
     const output = Object.keys(cssColors).map(colorName => {
         const variables = cssColors[colorName];
         return Object.keys(variables).map(key => `${variables[key]}`).join('\n  ');
@@ -103,6 +106,7 @@ async function promptForColors() {
   ${output}
 }`;
 
+    // Write CSS variables to file
     fs.writeFile('colors.css', cssOutput, (err) => {
         if (err) {
             console.error('Error saving the file:', err);
