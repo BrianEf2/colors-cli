@@ -60,6 +60,7 @@ async function promptForColors() {
         Object.keys(shades).forEach(shadeKey => {
             const rgb = hexToRgb(shades[shadeKey]);
             const variableName = `--color-${colorName}-${shadeKey}`;
+            tailwindVariables['DEFAULT'] = `rgb(var(--color-${colorName}-500) / <alpha-value>)`;
             tailwindVariables[shadeKey] = `rgb(var(${variableName}) / <alpha-value>)`;
             cssVariables[shadeKey] = `${variableName}: ${rgb};`;
         });
